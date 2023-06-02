@@ -1,34 +1,41 @@
 <template>
     <div class="amount-checker">
-        <button class="minus-btn" @click="minus">-</button>
-        <div class="amount">{{ currentAmount }}</div>
-        <button class="plus-btn" @click="currentAmount += 1">+</button>
+        <button class="minus-btn" @click="(event) => {if (product.amount - 1 > 0) 
+            {product.amount -= 1
+            $store.dispatch('setAmount', {id: product.id, amount: product.amount})}}">-</button>
+        <div class="amount">{{ product.amount }}</div>
+        <button class="plus-btn" @click="(event) => 
+        {product.amount += 1
+        $store.dispatch('setAmount', {id: product.id, amount: product.amount})}">+</button>
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import store from '@/store'
+import { onMounted, ref } from 'vue'
+
 export default {
     props: {
-        amount: 1
+        product: Object,
     },
 
-    mounted() {
-        this.currentAmount = this.amount
-    },
-
-    methods: {
-        minus() {
-            if (this.currentAmount > 1) {
-                this.currentAmount -= 1
-            }
-        }
-    },
-
-    data() {
-        return {
-            currentAmount: 1
-        }
+    watch: {
+    product: {
+      handler(newValue) {
+        store.dispatch('setAmount', {id: newValue.id, amount: newValue.amount})
+      },
+      deep: true
     }
+},
+    setup(props) {
+        onMounted(() => {
+            if (props.product.amount == undefined) {
+            props.product.amount = 1
+        }
+        })
+        
+        
+    },
 }
 </script>
 
@@ -79,6 +86,7 @@ export default {
     border-right: none;
     font-size:calc(10px + 8 * (100vw - 320px) / 880);
     vertical-align: middle;
-    padding: 5px 10px;
+    min-width: calc(20px + 8 * (100vw - 320px) / 880);
+    text-align: center;
 }
 </style>

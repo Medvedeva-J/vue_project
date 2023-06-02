@@ -1,5 +1,5 @@
 <template>
-    <div class="product-card" @click="showPopupInfo">
+    <div class="product-card" @click="popupVisible = true">
       <img class="image" :src="product_data.image">
       <div class="product-info">
           <div class="product-name">{{product_data.title}}</div>
@@ -7,10 +7,11 @@
       </div>
     </div>
     <ProductPopup style="z-index: 11;" v-if="popupVisible" :product="product_data"
-     @toggleFav="toggleFav" @toggleCart="toggleCart" @closePopupInfo="closePopupInfo"></ProductPopup>
+     @toggleFav="$store.dispatch('toggleFav', product_data.id)"
+     @toggleCart="$store.dispatch('toggleCart', product_data.id)" @closePopupInfo="popupVisible = !popupVisible"></ProductPopup>
 </template>
 
-<script>
+<script lang="ts">
 import ProductPopup from '@/components/ProductPopup.vue';
 export default {
   props: {
@@ -19,28 +20,6 @@ export default {
 
   components: {
     ProductPopup
-  },
-
-
-  methods: {
-    //открыть карточку товара
-    showPopupInfo() {
-      this.popupVisible = true
-    },
-
-    //закрыть карточку товара
-    closePopupInfo() {
-      this.popupVisible = false
-      this.$parent.updateFavs()
-    },
-
-    toggleFav(id) {
-      this.$emit('toggleFav', id)
-    },
-
-    toggleCart(id) {
-      this.$emit('toggleCart', id)
-    }
   },
 
   data() {
